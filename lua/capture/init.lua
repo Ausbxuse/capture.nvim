@@ -6,7 +6,7 @@ M.config = {
 	capture_file_path = home .. "/Documents/Notes/todos.md",
 }
 
-local function open_capture_popup()
+local function toggle_capture_popup()
 	local popup_width = 80
 	local popup_height = 20
 	local win_width = vim.fn.winwidth(0)
@@ -14,10 +14,10 @@ local function open_capture_popup()
 	local row = math.floor((win_height - popup_height) / 2)
 	local col = math.floor((win_width - popup_width) / 2)
 
-	if vim.g.floating_window and vim.api.nvim_win_is_valid(vim.g.floating_window) then
+	if vim.g.capture_window and vim.api.nvim_win_is_valid(vim.g.capture_window) then
 		-- Close the window if it exists
 		vim.api.nvim_win_hide(0)
-		vim.g.floating_window = nil
+		vim.g.capture_window = nil
 	else
 		local bufnr
 		for _, buf_id in ipairs(vim.api.nvim_list_bufs()) do
@@ -47,30 +47,15 @@ local function open_capture_popup()
 			-- style = "minimal",
 			focusable = true,
 		})
-		vim.g.floating_window = popup
+		vim.g.capture_window = popup
 	end
-end
-
-local function save_and_close_current_buffer()
-	if vim.api.nvim_buf_get_option(0, "modified") then
-		vim.api.nvim_command("write")
-	end
-	vim.api.nvim_command("quit")
 end
 
 vim.api.nvim_create_user_command("Capture", function()
-	open_capture_popup()
+	toggle_capture_popup()
 end, {})
 
-local function toggle_capture()
-	if vim.api.nvim_buf_get_name(0) ~= M.config.capture_file_path then
-		open_capture_popup()
-	else
-		save_and_close_current_buffer()
-	end
-end
-
-vim.keymap.set("n", "<leader>k", toggle_capture, { desc = "Capture" })
+vim.keymap.set("n", "<leader>k", toggle_capture_popup, { desc = "Capture" })
 
 M.setup = function(config)
 	config = config or {}
