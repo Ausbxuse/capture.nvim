@@ -3,16 +3,14 @@ local M = {}
 local home = vim.fn.expand("$HOME")
 
 M.config = {
-	capture_file_path = home .. "/Documents/Notes/todos.md",
+	capture_file_path = home .. "/Documents/Notes/fleeting.md",
 }
 
 local function toggle_capture_popup()
-	local popup_width = 80
-	local popup_height = 20
 	local win_width = vim.fn.winwidth(0)
 	local win_height = vim.fn.winheight(0)
-	local row = math.floor((win_height - popup_height) / 2)
-	local col = math.floor((win_width - popup_width) / 2)
+	-- local popup_width = vim.api.nvim_win_get_width(0)
+	-- local popup_height = vim.api.nvim_win_get_height(0)
 
 	if vim.g.capture_window and vim.api.nvim_win_is_valid(vim.g.capture_window) then
 		-- Close the window if it exists
@@ -40,10 +38,10 @@ local function toggle_capture_popup()
 
 		local popup = vim.api.nvim_open_win(bufnr, true, {
 			relative = "editor",
-			width = popup_width,
-			height = popup_height,
-			row = row,
-			col = col,
+			width = win_width,
+			height = win_height,
+			row = 0,
+			col = 0,
 			-- style = "minimal",
 			focusable = true,
 		})
