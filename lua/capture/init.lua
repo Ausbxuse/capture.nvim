@@ -14,6 +14,7 @@ local function toggle_capture_popup()
 
 	if vim.g.capture_window and vim.api.nvim_win_is_valid(vim.g.capture_window) then
 		-- Close the window if it exists
+		vim.api.nvim_command(":w")
 		vim.api.nvim_win_hide(0)
 		vim.g.capture_window = nil
 	else
