@@ -46,6 +46,12 @@ local function toggle_capture_popup()
 			-- style = "minimal",
 			focusable = true,
 		})
+
+		local current_win = vim.api.nvim_get_current_win()
+		local last_line = vim.api.nvim_buf_line_count(bufnr)
+		local last_char = #vim.api.nvim_buf_get_lines(bufnr, last_line - 1, last_line, false)[1]
+		vim.api.nvim_win_set_cursor(current_win, { last_line, last_char })
+		vim.api.nvim_command("startinsert!")
 		vim.g.capture_window = popup
 	end
 end
