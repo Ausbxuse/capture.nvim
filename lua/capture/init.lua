@@ -7,16 +7,16 @@ M.config = {
 }
 
 local function toggle_capture_popup()
-	local win_width = vim.fn.winwidth(0)
-	local win_height = vim.fn.winheight(0)
-	-- local popup_width = vim.api.nvim_win_get_width(0)
-	-- local popup_height = vim.api.nvim_win_get_height(0)
+	local current_buf = vim.api.nvim_get_current_buf()
+	local current_buf_empty = vim.api.nvim_buf_line_count(current_buf) == 1
+		and vim.api.nvim_buf_get_lines(current_buf, 0, 1, false)[1] == ""
 
-	if vim.g.capture_window and vim.api.nvim_win_is_valid(vim.g.capture_window) then
+	if vim.g.capture_buffer then
 		-- Close the window if it exists
 		vim.api.nvim_command(":w")
-		vim.api.nvim_win_hide(0)
-		vim.g.capture_window = nil
+		-- vim.api.nvim_win_hide(0)
+		vim.api.nvim_buf_delete(0, {})
+		vim.g.capture_buffer = nil
 	else
 		local bufnr
 		for _, buf_id in ipairs(vim.api.nvim_list_bufs()) do
@@ -37,22 +37,17 @@ local function toggle_capture_popup()
 			end)
 		end
 
-		local popup = vim.api.nvim_open_win(bufnr, true, {
-			relative = "editor",
-			width = win_width,
-			height = win_height,
-			row = 0,
-			col = 0,
-			-- style = "minimal",
-			focusable = true,
-		})
+		if not current_buf_empty then
+			vim.cmd("split")
+		end
+		vim.api.nvim_win_set_buf(0, bufnr)
 
 		local current_win = vim.api.nvim_get_current_win()
 		local last_line = vim.api.nvim_buf_line_count(bufnr)
 		local last_char = #vim.api.nvim_buf_get_lines(bufnr, last_line - 1, last_line, false)[1]
 		vim.api.nvim_win_set_cursor(current_win, { last_line, last_char })
-		vim.api.nvim_command("startinsert!")
-		vim.g.capture_window = popup
+		-- vim.api.nvim_command("startinsert!")
+		vim.g.capture_buffer = bufnr
 	end
 end
 
